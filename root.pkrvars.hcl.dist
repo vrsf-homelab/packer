@@ -1,0 +1,4 @@
+## P R O X M O X
+proxmox_host         = ""
+proxmox_api_user     = "packer@pve"
+proxmox_api_password = ""
