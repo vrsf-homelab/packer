@@ -30,13 +30,17 @@ variable "proxmox_node" {
 variable "iso_file" {
   type = string
 }
+variable "storage_type" {
+  type    = string
+  default = "local-lvm"
+}
 
 
 #########################
 #### L O C A L S
 ##############
 locals {
-  storage_type = "local-zfs"
+  storage_type = var.storage_type
   builder_dir = "/tmp/builder"
 
   ## Formatting template name
@@ -82,7 +86,7 @@ source "proxmox-iso" "debian" {
   unmount_iso    = true
 
   cloud_init              = true
-  cloud_init_storage_pool = "local-zfs"
+  cloud_init_storage_pool = var.storage_type
 
   vm_name  = local.template_name
   os       = "l26"
