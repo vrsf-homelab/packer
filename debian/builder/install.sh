@@ -3,10 +3,6 @@ set -eo pipefail
 shopt -s nullglob
 shopt -s dotglob
 
-#
-# C O N F I G U R A T I O N
-#
-
 
 #
 # H E L P E R   F U N C T I O N S
@@ -21,7 +17,7 @@ declare -i term_width=120
 h1() {
   declare border padding text
   border='\e[1;34m'"$(printf '=%.0s' $(seq 1 "$term_width"))"'\e[0m'
-  padding="$(printf ' %.0s' $(seq 1 $(((term_width - $(wc -m <<<"$*")) / 3))))"
+  padding="$(printf ' %.0s' $(seq 1 $(((term_width - $(wc -m <<<"$*")) / 4))))"
   text="\\e[1m$*\\e[0m"
   echo -e "$border"
   echo -e "${padding}${text}${padding}"
