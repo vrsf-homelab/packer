@@ -52,28 +52,3 @@ jobs:
         working-directory: "${{ github.workspace }}/debian"
         run: |
           packer validate -var-file ../test.pkrvars.hcl -var-file variables.pkrvars.hcl *.pkr.hcl
-
-  finalize:
-    if: ${{ cancelled() == false && failure() == false && (inputs.force-build || github.ref == 'refs/heads/master') }}
-    name: Finalize
-    needs:
-      - packer-validate
-    permissions:
-      contents: write
-    runs-on:
-      - ubuntu-latest
-    steps:
-      - name: Prepare build version
-        run: |
-          export BUILD_VERSION=$(date +%Y%m%d%H%M%S)
-
-      - name: Dispatch deployment event
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          event-type: new-deployment
-          client-payload: |
-            {
-              "tag": "${BUILD_VERSION}",
-              "branch": "${{ github.ref }}"
-            }
