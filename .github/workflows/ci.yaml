@@ -31,8 +31,6 @@ jobs:
           echo 'proxmox_host="proxmox.pl"' >> test.pkrvars.hcl
           echo 'proxmox_api_user="user@pve"' >> test.pkrvars.hcl
           echo 'proxmox_api_password="password"' >> test.pkrvars.hcl
-          # Variables
-          echo 'iso_file="debian-image.iso"' >> test.pkrvars.hcl
           # Dynamic
           echo 'proxmox_node="alpha"' >> test.pkrvars.hcl
 
@@ -40,4 +38,4 @@ jobs:
         id: validate
         working-directory: "${{ github.workspace }}/debian"
         run: |
-          packer validate -var-file ../test.pkrvars.hcl variables.pkrvars.hcl packer.pkr.hcl
+          packer validate -var-file ../test.pkrvars.hcl -var-file variables.pkrvars.hcl packer.pkr.hcl
