@@ -50,7 +50,7 @@ jobs:
       - name: Format check
         working-directory: "${{ github.workspace }}/debian"
         run: |
-          packer fmr -check *.pkr.hcl
+          packer fmt -check *.pkr.hcl
 
       - name: Run validate
         id: validate
