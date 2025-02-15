@@ -52,7 +52,7 @@ locals {
 
 
 #########################
-#### S O U R C E
+#### T E M P L A T E
 ##############
 source "proxmox-iso" "debian" {
   proxmox_url              = "https://${var.proxmox_host}/api2/json"
@@ -102,6 +102,10 @@ source "proxmox-iso" "debian" {
   ssh_timeout  = "30m"
 }
 
+
+#########################
+#### B U I L D E R
+##############
 build {
   sources = ["source.proxmox-iso.debian"]
 
@@ -112,6 +116,11 @@ build {
   }
 
   provisioner "file" {
+    destination = "/etc/environment"
+    content     = "PVE_NODE_NAME=${var.proxmox_node}\n"
+  }
+
+  provisioner "file" {
     destination = "/etc/cloud/cloud.cfg"
     source      = "cloud.cfg"
   }
@@ -119,6 +128,11 @@ build {
   provisioner "file" {
     destination = local.builder_dir
     source      = "builder/"
+  }
+
+  provisioner "file" {
+    destination = "/"
+    source      = "files/"
   }
 
   provisioner "shell" {
