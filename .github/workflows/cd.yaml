@@ -43,9 +43,9 @@ jobs:
       fail-fast: true
       matrix:
         pve_node:
-          - name: alpha
-          # - name: beta
-          # - name: tango
+          - alpha
+          # - beta
+          # - tango
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
@@ -60,7 +60,7 @@ jobs:
       - name: Build image
         run: |
           packer build \
-            -var "proxmox_node=${{ matrix.pve_node.name }}" \
+            -var "proxmox_node=${{ matrix.pve_node }}" \
             -var "proxmox_host=${{ secrets.PROXMOX_HOST }}" \
             -var "proxmox_api_user=${{ secrets.PROXMOX_API_USER }}" \
             -var "proxmox_api_password=${{ secrets.PROXMOX_API_TOKEN }}" \
