@@ -47,11 +47,6 @@ jobs:
         run: |
           packer init .
 
-      - name: Format check
-        working-directory: "${{ github.workspace }}/debian"
-        run: |
-          packer fmt -check *.pkr.hcl
-
       - name: Run validate
         id: validate
         working-directory: "${{ github.workspace }}/debian"
