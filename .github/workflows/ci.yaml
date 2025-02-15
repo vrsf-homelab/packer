@@ -6,6 +6,13 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
+    inputs:
+      force-build:
+        default: false
+        description: Running manual build
+        type: boolean
+        required: false
 
 concurrency:
   cancel-in-progress: true
@@ -13,7 +20,7 @@ concurrency:
 
 jobs:
   packer-validate:
-    name: Packer validate
+    name: Lint Packer
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -40,8 +47,38 @@ jobs:
         run: |
           packer init .
 
+      - name: Format check
+        working-directory: "${{ github.workspace }}/debian"
+        run: |
+          packer fmr -check *.pkr.hcl
+
       - name: Run validate
         id: validate
         working-directory: "${{ github.workspace }}/debian"
         run: |
-          packer validate -var-file ../test.pkrvars.hcl -var-file variables.pkrvars.hcl packer.pkr.hcl
+          packer validate -var-file ../test.pkrvars.hcl -var-file variables.pkrvars.hcl *.pkr.hcl
+
+  finalize:
+    if: ${{ cancelled() == false && failure() == false && (inputs.force-build || github.ref == 'refs/heads/master') }}
+    name: Finalize
+    needs:
+      - packer-validate
+    permissions:
+      contents: write
+    runs-on:
+      - ubuntu-latest
+    steps:
+      - name: Prepare build version
+        run: |
+          export BUILD_VERSION=$(date +%Y%m%d%H%M%S)
+
+      - name: Dispatch deployment event
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: new-deployment
+          client-payload: |
+            {
+              "tag": "${BUILD_VERSION}",
+              "branch": "${{ github.ref }}"
+            }
