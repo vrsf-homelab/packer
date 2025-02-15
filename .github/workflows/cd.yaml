@@ -4,14 +4,9 @@ on:
   repository_dispatch:
     types:
       - new-deployment
-  workflow_dispatch:
-    inputs:
-      debian:
-        description: Run builds only on debian
-        type: boolean
 jobs:
   prepare:
-    if: ${{ cancelled() == false && failure() == false && (github.event.client_payload.tag || inputs.debian != false) }}
+    if: ${{ cancelled() == false && failure() == false && github.event.client_payload.tag }}
     runs-on:
       - homelab
     steps:
@@ -44,8 +39,8 @@ jobs:
       matrix:
         pve_node:
           - alpha
-          # - name: beta
-          # - name: tango
+          # - beta
+          # - tango
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
@@ -60,7 +55,7 @@ jobs:
       - name: Build image
         run: |
           packer build \
-            -var "proxmox_node=${{ matrix.pve_node.name }}" \
+            -var "proxmox_node=${{ matrix.pve_node }}" \
             -var "proxmox_host=${{ secrets.PROXMOX_HOST }}" \
             -var "proxmox_api_user=${{ secrets.PROXMOX_API_USER }}" \
             -var "proxmox_api_password=${{ secrets.PROXMOX_API_TOKEN }}" \

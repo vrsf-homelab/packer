@@ -1,0 +1,11 @@
+[Unit]
+Description=Register machine in Consul Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/consul-register.sh
+
+[Install]
+WantedBy=multi-user.target
