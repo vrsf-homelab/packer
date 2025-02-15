@@ -34,6 +34,12 @@ jobs:
           # Dynamic
           echo 'proxmox_node="alpha"' >> test.pkrvars.hcl
 
+      - name: Init Packer
+        id: init
+        working-directory: "${{ github.workspace }}/debian"
+        run: |
+          packer init .
+
       - name: Run validate
         id: validate
         working-directory: "${{ github.workspace }}/debian"
