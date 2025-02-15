@@ -1,0 +1,43 @@
+name: CI
+on:
+  pull_request:
+    branches:
+      - "**"
+  push:
+    branches:
+      - master
+
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  packer-validate:
+    name: Packer validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup packer
+        id: setup
+        uses: hashicorp/setup-packer@v3
+        with:
+          version: "1.12.0"
+
+      - name: Prepare dummy variables
+        run: |
+          # Root
+          echo 'proxmox_host="proxmox.pl"' >> test.pkrvars.hcl
+          echo 'proxmox_api_user="user@pve"' >> test.pkrvars.hcl
+          echo 'proxmox_api_password="password"' >> test.pkrvars.hcl
+          # Variables
+          echo 'iso_file="debian-image.iso"' >> test.pkrvars.hcl
+          # Dynamic
+          echo 'proxmox_node="alpha"' >> test.pkrvars.hcl
+
+      - name: Run validate
+        id: validate
+        working-directory: "$GITHUB_WORKSPACE/debian"
+        run: |
+          packer validate -var-file ../test.pkrbars.hcl variables.pkrvars.hcl packer.pkr.hcl
