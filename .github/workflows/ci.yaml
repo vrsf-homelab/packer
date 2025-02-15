@@ -40,4 +40,4 @@ jobs:
         id: validate
         working-directory: "${{ github.workspace }}/debian"
         run: |
-          packer validate -var-file ../test.pkrbars.hcl variables.pkrvars.hcl packer.pkr.hcl
+          packer validate -var-file ../test.pkrvars.hcl variables.pkrvars.hcl packer.pkr.hcl
