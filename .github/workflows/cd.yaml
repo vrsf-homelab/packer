@@ -4,14 +4,9 @@ on:
   repository_dispatch:
     types:
       - new-deployment
-  workflow_dispatch:
-    inputs:
-      debian:
-        description: Run builds only on debian
-        type: boolean
 jobs:
   prepare:
-    if: ${{ cancelled() == false && failure() == false && (github.event.client_payload.tag || inputs.debian != false) }}
+    if: ${{ cancelled() == false && failure() == false && github.event.client_payload.tag }}
     runs-on:
       - homelab
     steps:
